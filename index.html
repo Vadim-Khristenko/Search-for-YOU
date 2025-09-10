@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchForYou — умный поиск с эффектами</title>
+    <meta name="description" content="Направляем к поиску с юмором, стилем и магией. Почему бы тебе просто не загуглить?">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+</head>
+<body>
+    <!-- Loading Screen for Animations -->
+    <div id="loading-screen" class="loading-screen hidden">
+        <div class="loading-content">
+            <div class="search-animation">
+                <div class="radar"></div>
+                <div class="scanning-line"></div>
+            </div>
+            <h2 id="loading-text">Поиск ответа...</h2>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Screen -->
+    <div id="success-screen" class="success-screen hidden">
+        <div class="success-content">
+            <div class="success-icon">✅</div>
+            <h1>ОТВЕТ НАЙДЕН!</h1>
+            <p>Перенаправление...</p>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <main class="app">
+        <header class="header">
+            <h1 class="logo">
+                <span class="logo-icon">🔍</span>
+                SearchForYou
+            </h1>
+            <p class="tagline">потому что вы способны найти это сами</p>
+        </header>
+
+        <div class="search-container">
+            <form id="search-form" class="search-form">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="query-input" 
+                        class="query-input" 
+                        placeholder="Введите ваш вопрос…" 
+                        autocomplete="off"
+                        required
+                    >
+                    <div class="typing-cursor"></div>
+                </div>
+
+                <div class="search-engines">
+                    <h3>Выберите поисковую систему:</h3>
+                    <div class="engine-buttons">
+                        <button type="button" class="engine-btn active" data-engine="google">
+                            <svg class="engine-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Google
+                        </button>
+                        
+                        <button type="button" class="engine-btn" data-engine="yandex">
+                            <svg class="engine-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v-.07zM17.9 17.39c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                            </svg>
+                            Yandex
+                        </button>
+                        
+                        <button type="button" class="engine-btn" data-engine="bing">
+                            <svg class="engine-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M5.71 3L3 4.35v11.43L12 21l9-5.22V9.65L5.71 3zM12 16.47L6 13.74V8.26l6 2.73v5.48z"/>
+                            </svg>
+                            Bing
+                        </button>
+                        
+                        <button type="button" class="engine-btn" data-engine="duckduckgo">
+                            <svg class="engine-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                            </svg>
+                            DuckDuckGo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="custom-url-section">
+                    <details class="custom-url-details">
+                        <summary>Или укажите свою ссылку (Custom URL)</summary>
+                        <input 
+                            type="url" 
+                            id="custom-url" 
+                            class="custom-url-input" 
+                            placeholder="https://example.com/your-answer"
+                        >
+                    </details>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="search-btn primary">
+                        <span class="btn-text">Найти ответ</span>
+                        <span class="btn-icon">🔍</span>
+                    </button>
+                    
+                    <button type="button" id="share-btn" class="search-btn secondary">
+                        <span class="btn-text">Поделиться запросом</span>
+                        <span class="btn-icon">🔗</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Share URL Display -->
+            <div id="share-result" class="share-result hidden">
+                <h3>Ссылка для поделиться:</h3>
+                <div class="share-url-container">
+                    <input type="text" id="share-url" class="share-url-input" readonly>
+                    <button id="copy-btn" class="copy-btn">
+                        <span class="copy-text">Копировать</span>
+                        <span class="copy-icon">📋</span>
+                    </button>
+                </div>
+                <p class="share-description">
+                    Отправьте эту ссылку — получатель увидит эпическую анимацию поиска!
+                </p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SearchForYou — потому что вы способны найти это сами. Но мы поможем с эффектами.</p>
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
