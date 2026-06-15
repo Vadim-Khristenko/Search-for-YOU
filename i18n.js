@@ -50,8 +50,9 @@ const I18N = {
         'ctrl.lang': 'RU',
         'ctrl.theme': 'LIGHT',
         'ctrl.themeBack': 'DARK',
-        'ctrl.skin': 'OLD WEB',
-        'ctrl.skinBack': 'MODERN',
+        'skin.win95': 'WIN 95',
+        'skin.macos': 'MAC OS',
+        'skin.modern': 'MODERN',
 
         'toast.needQuery': 'Type something to search first.',
         'toast.copied': 'Link copied.',
@@ -118,8 +119,9 @@ const I18N = {
         'ctrl.lang': 'EN',
         'ctrl.theme': 'СВЕТ',
         'ctrl.themeBack': 'ТЬМА',
-        'ctrl.skin': 'СТАРЫЙ ВЕБ',
-        'ctrl.skinBack': 'СОВРЕМ.',
+        'skin.win95': 'WIN 95',
+        'skin.macos': 'MAC OS',
+        'skin.modern': 'СОВРЕМ.',
 
         'toast.needQuery': 'Сначала введите запрос.',
         'toast.copied': 'Ссылка скопирована.',

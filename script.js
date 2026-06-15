@@ -24,7 +24,10 @@
     if (!I18N[lang]) lang = 'en';
 
     let theme = localStorage.getItem(LS.theme) || 'dark';
+    const SKINS = ['modern', 'win95', 'macos'];
     let skin = localStorage.getItem(LS.skin) || 'modern';
+    if (!SKINS.includes(skin)) skin = 'modern';
+    const nextSkin = () => SKINS[(SKINS.indexOf(skin) + 1) % SKINS.length];
     let currentEngine = localStorage.getItem(LS.engine) || 'google';
     if (!ENGINE_MAP[currentEngine]) currentEngine = 'google';
     let activeCat = localStorage.getItem(LS.cat) || ENGINE_MAP[currentEngine].cat;
@@ -45,9 +48,11 @@
 
     function updateControlLabels() {
         $('#theme-label').textContent = theme === 'dark' ? t('ctrl.theme') : t('ctrl.themeBack');
-        $('#skin-label').textContent = skin === 'modern' ? t('ctrl.skin') : t('ctrl.skinBack');
+        $('#skin-label').textContent = t('skin.' + nextSkin());
         $('#foot-theme').textContent =
-            skin === 'win95' ? 'WINDOWS 95' : (theme === 'dark' ? 'TOKYO NIGHT' : 'TOKYO DAY');
+            skin === 'win95' ? 'WINDOWS 95' : skin === 'macos' ? 'SYSTEM 6' : (theme === 'dark' ? 'TOKYO NIGHT' : 'TOKYO DAY');
+        const wt = document.querySelector('.win-title [data-i18n="win.title"]');
+        if (wt) wt.textContent = skin === 'macos' ? 'SearchForYou' : t('win.title');
     }
 
     /* ============================================================
@@ -57,7 +62,8 @@
         document.documentElement.setAttribute('data-theme', theme);
         document.body.setAttribute('data-theme', theme);
         const meta = $('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', skin === 'win95' ? '#008080' : (theme === 'dark' ? '#000000' : '#e1e2e7'));
+        if (meta) meta.setAttribute('content',
+            skin === 'win95' ? '#008080' : skin === 'macos' ? '#bdbdbd' : (theme === 'dark' ? '#000000' : '#e1e2e7'));
     }
     function applySkin() {
         document.documentElement.setAttribute('data-skin', skin);
@@ -288,7 +294,7 @@
             applyTheme(); updateControlLabels();
         });
         $('#skin-toggle').addEventListener('click', () => {
-            skin = skin === 'modern' ? 'win95' : 'modern';
+            skin = nextSkin();
             localStorage.setItem(LS.skin, skin);
             applySkin(); updateControlLabels();
         });
