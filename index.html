@@ -1,153 +1,212 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SearchForYou — умный поиск с эффектами</title>
-    <meta name="description" content="Направляем к поиску с юмором, стилем и магией. Почему бы тебе просто не загуглить?">
-    
-    <!-- Google Fonts -->
+    <title>SearchForYou — the search portal that does it with style</title>
+    <meta name="description" content="One portal, 25+ search engines — from Google to indie old-web gems like Marginalia & Wiby. Pick an engine, search with cinematic flair, and share links that play an epic search animation.">
+    <meta name="theme-color" content="#0a0a12">
+    <meta name="color-scheme" content="dark light">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SearchForYou — the search portal that does it with style">
+    <meta property="og:description" content="25+ search engines in one beautiful portal. Mainstream, privacy, AI, academic and indie old-web search — with cinematic animations and shareable links.">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://cdn.simpleicons.org">
+    <link rel="preconnect" href="https://unpkg.com">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+
+    <!-- Manifest & Favicon -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236366f1'/><stop offset='0.5' stop-color='%23a855f7'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><circle cx='42' cy='42' r='26' fill='none' stroke='url(%23g)' stroke-width='8'/><line x1='62' y1='62' x2='84' y2='84' stroke='url(%23g)' stroke-width='10' stroke-linecap='round'/></svg>">
 </head>
-<body>
-    <!-- Loading Screen for Animations -->
-    <div id="loading-screen" class="loading-screen hidden">
+<body data-theme="dark">
+    <!-- Animated network background -->
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="aurora" aria-hidden="true">
+        <span class="aurora-blob blob-1"></span>
+        <span class="aurora-blob blob-2"></span>
+        <span class="aurora-blob blob-3"></span>
+    </div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <!-- Loading overlay (shown for shared links) -->
+    <div id="loading-screen" class="overlay loading-screen hidden" aria-hidden="true">
         <div class="loading-content">
             <div class="search-animation">
-                <div class="radar"></div>
-                <div class="scanning-line"></div>
+                <div class="radar">
+                    <span class="radar-sweep"></span>
+                    <span class="radar-dot dot-1"></span>
+                    <span class="radar-dot dot-2"></span>
+                    <span class="radar-dot dot-3"></span>
+                </div>
             </div>
-            <h2 id="loading-text">Поиск ответа...</h2>
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
+            <h2 id="loading-text">Searching…</h2>
+            <p id="loading-query" class="loading-query"></p>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
         </div>
     </div>
 
-    <!-- Success Screen -->
-    <div id="success-screen" class="success-screen hidden">
+    <!-- Success overlay -->
+    <div id="success-screen" class="overlay success-screen hidden" aria-hidden="true">
         <div class="success-content">
-            <div class="success-icon">✅</div>
-            <h1>ОТВЕТ НАЙДЕН!</h1>
-            <p>Перенаправление...</p>
+            <div class="success-icon"><i data-lucide="check-circle-2"></i></div>
+            <h1 data-i18n="success.title">ANSWER FOUND!</h1>
+            <p data-i18n="success.subtitle">Redirecting you now…</p>
         </div>
     </div>
 
-    <!-- Main Application -->
+    <!-- Top bar -->
+    <nav class="topbar">
+        <a class="brand" href="./" aria-label="SearchForYou home">
+            <span class="brand-mark"><i data-lucide="search"></i></span>
+            <span class="brand-name">Search<span class="brand-accent">For</span>You</span>
+        </a>
+        <div class="controls">
+            <button id="lang-toggle" class="ctrl-btn" type="button" aria-label="Switch language" title="Switch language">
+                <i data-lucide="languages"></i>
+                <span id="lang-label" class="ctrl-label">EN</span>
+            </button>
+            <button id="theme-toggle" class="ctrl-btn" type="button" aria-label="Toggle theme" title="Toggle theme">
+                <i data-lucide="moon" class="icon-dark"></i>
+                <i data-lucide="sun" class="icon-light"></i>
+            </button>
+            <a class="ctrl-btn" href="https://github.com/Vadim-Khristenko/Search-for-YOU" target="_blank" rel="noopener" aria-label="GitHub repository" title="Star on GitHub">
+                <i data-lucide="github"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main app -->
     <main class="app">
-        <header class="header">
-            <h1 class="logo">
-                <span class="logo-icon">🔍</span>
-                SearchForYou
+        <header class="hero">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                <span data-i18n="hero.badge">25+ search engines · one portal</span>
+            </div>
+            <h1 class="hero-title">
+                <span data-i18n="hero.titleA">Search</span><span class="grad-text" data-i18n="hero.titleB">ForYou</span>
             </h1>
-            <p class="tagline">потому что вы способны найти это сами</p>
+            <p class="hero-tagline" data-i18n="hero.tagline">Because you can find it yourself — but we make it cinematic.</p>
+            <p class="hero-sub" id="hero-rotator" data-i18n="hero.sub">Mainstream, privacy, AI, academic &amp; indie old-web search in one place.</p>
         </header>
 
-        <div class="search-container">
-            <form id="search-form" class="search-form">
+        <section class="search-card glass">
+            <form id="search-form" class="search-form" autocomplete="off">
                 <div class="input-group">
-                    <input 
-                        type="text" 
-                        id="query-input" 
-                        class="query-input" 
-                        placeholder="Введите ваш вопрос…" 
+                    <i data-lucide="search" class="input-icon"></i>
+                    <input
+                        type="text"
+                        id="query-input"
+                        class="query-input"
+                        placeholder="Type anything…"
+                        data-i18n-placeholder="search.placeholder"
                         autocomplete="off"
                         required
                     >
-                    <div class="typing-cursor"></div>
+                    <button type="button" id="clear-btn" class="clear-btn hidden" aria-label="Clear">
+                        <i data-lucide="x"></i>
+                    </button>
+                    <span class="typing-cursor"></span>
                 </div>
 
-                <div class="search-engines">
-                    <h3>Выберите поисковую систему:</h3>
-                    <div class="engine-buttons">
-                        <button type="button" class="engine-btn active" data-engine="google">
-                            <svg class="engine-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                            </svg>
-                            Google
-                        </button>
-                        
-                        <button type="button" class="engine-btn" data-engine="yandex">
-                            <svg class="engine-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v-.07zM17.9 17.39c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                            </svg>
-                            Yandex
-                        </button>
-                        
-                        <button type="button" class="engine-btn" data-engine="bing">
-                            <svg class="engine-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M5.71 3L3 4.35v11.43L12 21l9-5.22V9.65L5.71 3zM12 16.47L6 13.74V8.26l6 2.73v5.48z"/>
-                            </svg>
-                            Bing
-                        </button>
-                        
-                        <button type="button" class="engine-btn" data-engine="duckduckgo">
-                            <svg class="engine-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                            </svg>
-                            DuckDuckGo
-                        </button>
-                    </div>
+                <div class="engines-head">
+                    <h3 data-i18n="engines.heading">Choose your engine</h3>
+                    <button type="button" id="surprise-btn" class="surprise-btn" title="Pick a random engine">
+                        <i data-lucide="dices"></i>
+                        <span data-i18n="engines.surprise">Surprise me</span>
+                    </button>
                 </div>
 
-                <div class="custom-url-section">
-                    <details class="custom-url-details">
-                        <summary>Или укажите свою ссылку (Custom URL)</summary>
-                        <input 
-                            type="url" 
-                            id="custom-url" 
-                            class="custom-url-input" 
-                            placeholder="https://example.com/your-answer"
-                        >
-                    </details>
-                </div>
+                <div class="category-tabs" id="category-tabs" role="tablist"></div>
+
+                <div class="engine-grid" id="engine-grid"></div>
+
+                <details class="custom-url-details">
+                    <summary>
+                        <i data-lucide="link"></i>
+                        <span data-i18n="custom.summary">Or point to a custom URL</span>
+                    </summary>
+                    <input
+                        type="url"
+                        id="custom-url"
+                        class="custom-url-input"
+                        placeholder="https://example.com/your-answer"
+                    >
+                </details>
 
                 <div class="action-buttons">
                     <button type="submit" class="search-btn primary">
-                        <span class="btn-text">Найти ответ</span>
-                        <span class="btn-icon">🔍</span>
+                        <i data-lucide="rocket"></i>
+                        <span data-i18n="actions.search">Find the answer</span>
                     </button>
-                    
                     <button type="button" id="share-btn" class="search-btn secondary">
-                        <span class="btn-text">Поделиться запросом</span>
-                        <span class="btn-icon">🔗</span>
+                        <i data-lucide="share-2"></i>
+                        <span data-i18n="actions.share">Share query</span>
                     </button>
                 </div>
             </form>
 
-            <!-- Share URL Display -->
             <div id="share-result" class="share-result hidden">
-                <h3>Ссылка для поделиться:</h3>
+                <h3 data-i18n="share.heading">Your shareable link</h3>
                 <div class="share-url-container">
                     <input type="text" id="share-url" class="share-url-input" readonly>
                     <button id="copy-btn" class="copy-btn">
-                        <span class="copy-text">Копировать</span>
-                        <span class="copy-icon">📋</span>
+                        <i data-lucide="copy"></i>
+                        <span class="copy-text" data-i18n="share.copy">Copy</span>
                     </button>
                 </div>
-                <p class="share-description">
-                    Отправьте эту ссылку — получатель увидит эпическую анимацию поиска!
+                <p class="share-description" data-i18n="share.description">
+                    Send it to anyone — they'll get the full cinematic search animation before landing on the results.
                 </p>
             </div>
-        </div>
+        </section>
+
+        <section class="features">
+            <article class="feature-card glass">
+                <span class="feature-ico"><i data-lucide="shield-check"></i></span>
+                <h4 data-i18n="feat.privacy.t">Privacy first</h4>
+                <p data-i18n="feat.privacy.d">No tracking, no cookies, no backend. Pure static, runs entirely in your browser.</p>
+            </article>
+            <article class="feature-card glass">
+                <span class="feature-ico"><i data-lucide="sparkles"></i></span>
+                <h4 data-i18n="feat.engines.t">25+ engines</h4>
+                <p data-i18n="feat.engines.d">Mainstream, privacy, AI, academic and indie old-web search — all curated for you.</p>
+            </article>
+            <article class="feature-card glass">
+                <span class="feature-ico"><i data-lucide="wand-2"></i></span>
+                <h4 data-i18n="feat.fun.t">Cinematic links</h4>
+                <p data-i18n="feat.fun.d">Reply to "just google it" with a link that plays an epic search sequence.</p>
+            </article>
+        </section>
 
         <footer class="footer">
-            <p>SearchForYou — потому что вы способны найти это сами. Но мы поможем с эффектами.</p>
+            <p data-i18n="footer.text">SearchForYou — because you can find it yourself. We just make it look incredible.</p>
+            <p class="footer-sub">
+                <a href="https://github.com/Vadim-Khristenko/Search-for-YOU" target="_blank" rel="noopener">GitHub</a>
+                · <span data-i18n="footer.made">Crafted with</span> <i data-lucide="heart" class="heart"></i>
+            </p>
         </footer>
     </main>
 
-    <!-- Scripts -->
+    <!-- Toast -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <!-- Icon library -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <!-- App -->
+    <script src="i18n.js"></script>
+    <script src="engines.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
