@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-skin="modern">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchForYou — a directory of the whole search world</title>
+    <meta name="description" content="Sixty-plus search sources in one editorial directory — web, privacy, answer engines, academia, the indie old web, maps, shopping and streaming (Russian & global). Pick one, run it, share a cinematic link.">
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark light">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SearchForYou — a directory of the whole search world">
+    <meta property="og:description" content="60+ search sources in one place: web, privacy, answers, academic, indie old web, maps, shopping and streaming — Russian & global.">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.simpleicons.org">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><circle cx='42' cy='42' r='24' fill='none' stroke='%237aa2f7' stroke-width='8'/><line x1='60' y1='60' x2='84' y2='84' stroke='%23bb9af7' stroke-width='10' stroke-linecap='square'/></svg>">
+</head>
+<body data-theme="dark" data-skin="modern">
+
+    <!-- ===== Overlays ===== -->
+    <div id="loading-screen" class="overlay loading-screen hidden" aria-hidden="true">
+        <div class="boot">
+            <p class="boot-head">SEARCH//FORYOU — <span id="boot-query"></span></p>
+            <ul id="boot-log" class="boot-log"></ul>
+            <div class="boot-bar"><span class="boot-bar-fill"></span></div>
+        </div>
+    </div>
+
+    <div id="success-screen" class="overlay success-screen hidden" aria-hidden="true">
+        <div class="success">
+            <p class="success-mark">[ ✓ ]</p>
+            <h2 data-i18n="success.title">MATCH FOUND</h2>
+            <p class="success-sub" data-i18n="success.subtitle">routing you to the source</p>
+        </div>
+    </div>
+
+    <!-- ===== Top bar ===== -->
+    <header class="topbar">
+        <a class="brand" href="./" aria-label="SearchForYou">
+            <span class="brand-glyph">▢</span>SEARCH<span class="brand-slash">//</span>FORYOU
+        </a>
+        <nav class="controls">
+            <button id="lang-toggle" class="ctrl" type="button"><span class="ctrl-key">LANG</span><span id="lang-label" class="ctrl-val">RU</span></button>
+            <button id="theme-toggle" class="ctrl" type="button"><span class="ctrl-key">THEME</span><span id="theme-label" class="ctrl-val">LIGHT</span></button>
+            <button id="skin-toggle" class="ctrl" type="button"><span class="ctrl-key">SKIN</span><span id="skin-label" class="ctrl-val">OLD WEB</span></button>
+            <a class="ctrl ctrl-gh" href="https://github.com/Vadim-Khristenko/Search-for-YOU" target="_blank" rel="noopener"><span class="ctrl-key">SRC</span><span class="ctrl-val">GITHUB</span></a>
+        </nav>
+    </header>
+
+    <!-- ===== Win95 window chrome (only in old-web skin) ===== -->
+    <div class="win-titlebar" aria-hidden="true">
+        <span class="win-title"><span class="win-ico">🔍</span> <span data-i18n="win.title">SearchForYou.exe</span></span>
+        <span class="win-buttons"><b>_</b><b>▢</b><b>✕</b></span>
+    </div>
+    <div class="win-menubar" aria-hidden="true">
+        <span><u>F</u><span data-i18n="win.menu1">ile</span></span>
+        <span><u>E</u><span data-i18n="win.menu2">dit</span></span>
+        <span><u>S</u><span data-i18n="win.menu3">earch</span></span>
+        <span><u>H</u><span data-i18n="win.menu4">elp</span></span>
+    </div>
+
+    <main class="app">
+        <!-- ===== Hero (asymmetric) ===== -->
+        <section class="hero">
+            <p class="hero-kicker" data-i18n="hero.kicker">NO.001 — SEARCH DIRECTORY</p>
+            <h1 class="hero-title">
+                <span class="ht-1" data-i18n="hero.line1">Every</span>
+                <span class="ht-2" data-i18n="hero.line2">engine.</span>
+                <span class="ht-3" data-i18n="hero.line3">One prompt.</span>
+            </h1>
+            <p class="hero-lead" data-i18n="hero.lead">Sixty-plus search sources — web, privacy, answers, academia, the indie old web, maps, shops and streaming, Russian and global. Pick one. Run it. Share it with cinema.</p>
+        </section>
+
+        <!-- ===== Command bar (dominant anchor) ===== -->
+        <form id="search-form" class="command" autocomplete="off">
+            <label class="command-label" for="query-input" data-i18n="cmd.label">QUERY</label>
+            <div class="command-row">
+                <span class="prompt">&gt;</span>
+                <input type="text" id="query-input" class="command-input" placeholder="type, then hit run…" data-i18n-placeholder="cmd.placeholder" required>
+                <span class="caret" aria-hidden="true"></span>
+                <button type="submit" class="run" data-i18n="cmd.run">RUN</button>
+            </div>
+            <div class="command-aux">
+                <button type="button" id="surprise-btn" class="aux-btn"><span class="aux-x">✦</span> <span data-i18n="cmd.surprise">RANDOM</span></button>
+                <button type="button" id="share-btn" class="aux-btn"><span class="aux-x">⇪</span> <span data-i18n="cmd.share">SHARE</span></button>
+                <button type="button" id="custom-toggle" class="aux-btn"><span class="aux-x">⌁</span> <span data-i18n="cmd.custom">custom URL</span></button>
+                <input type="url" id="custom-url" class="custom-input hidden" placeholder="https://example.com/answer">
+            </div>
+        </form>
+
+        <!-- ===== Directory (asymmetric two-column) ===== -->
+        <section class="directory">
+            <aside class="dir-nav">
+                <p class="dir-nav-head" data-i18n="dir.heading">THE DIRECTORY</p>
+                <ul id="category-nav" class="cat-list"></ul>
+            </aside>
+            <div class="dir-body">
+                <div class="dir-status">
+                    <span><b id="dir-count">0</b> <span data-i18n="dir.count">sources</span></span>
+                    <span class="dir-sel"><span data-i18n="dir.selected">SELECTED</span>: <b id="dir-selected">—</b></span>
+                </div>
+                <ul id="engine-list" class="engine-list" role="listbox"></ul>
+            </div>
+        </section>
+
+        <!-- ===== Share ===== -->
+        <section id="share-result" class="share hidden">
+            <p class="share-head" data-i18n="share.heading">SHAREABLE LINK</p>
+            <div class="share-row">
+                <input type="text" id="share-url" class="share-url" readonly>
+                <button id="copy-btn" class="copy" data-i18n="share.copy">COPY</button>
+            </div>
+            <p class="share-hint" data-i18n="share.hint">Send it to anyone — they get the full boot-up search sequence before the results.</p>
+        </section>
+
+        <!-- ===== Footer ===== -->
+        <footer class="footer">
+            <p class="foot-note" data-i18n="foot.note">Static. No backend, no cookies, no tracking. Yours to fork.</p>
+            <p class="foot-meta">
+                <span data-i18n="foot.theme">THEME</span> <b id="foot-theme">TOKYO NIGHT</b>
+                <span class="foot-dot">·</span>
+                <a href="https://github.com/Vadim-Khristenko/Search-for-YOU" target="_blank" rel="noopener">/Vadim-Khristenko/Search-for-YOU</a>
+            </p>
+        </footer>
+    </main>
+
+    <div class="win-taskbar" aria-hidden="true">
+        <button class="win-start"><b>⊞</b> <span data-i18n="win.start">Start</span></button>
+        <div class="win-tasks"><span class="win-task">🔍 SearchForYou.exe</span></div>
+        <div class="win-clock" id="win-clock">12:00</div>
+    </div>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <script src="i18n.js"></script>
+    <script src="engines.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
